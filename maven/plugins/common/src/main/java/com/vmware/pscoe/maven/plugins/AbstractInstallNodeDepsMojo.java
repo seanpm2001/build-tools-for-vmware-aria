@@ -36,6 +36,7 @@ public abstract class AbstractInstallNodeDepsMojo extends AbstractIacMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         boolean allTgzLibsResolved = true;
+		int commandLenght = 0;
         File nodeModules = new File(project.getBasedir(), "node_modules");
 		if(skipInstallNodeDeps)
 		{
@@ -57,6 +58,8 @@ public abstract class AbstractInstallNodeDepsMojo extends AbstractIacMojo {
         }
 		
         List<String> deps = new LinkedList<>();
+		List<String> deps_cmd_7000 = new LinkedList<>();
+
         String npmExec = SystemUtils.IS_OS_WINDOWS ? "npm.cmd" : "npm";
         deps.add(npmExec);
         deps.add("install");
@@ -80,10 +83,41 @@ public abstract class AbstractInstallNodeDepsMojo extends AbstractIacMojo {
 				.execute(getLog());
         }
 
-        new ProcessExecutor()
-			.name("Dependency installation")
-			.directory(project.getBasedir())
-			.command(deps)
-			.execute(getLog());
+        getLog().info("deps length  " + deps.stream().mapToInt(String:: length).sum());
+
+		for(String path : deps)
+		{
+			commandLenght = commandLenght + path.length();
+			if(commandLenght <= 7000)
+			{
+				deps_cmd_7000.add(path);
+			}
+			else
+			{
+				
+				new ProcessExecutor()
+					.name("Dependency installation - Command Length is less than or equal 7000")
+					.directory(project.getBasedir())
+					.command(deps_cmd_7000)
+					.execute(getLog());
+
+				deps_cmd_7000 = new LinkedList<>();
+				deps_cmd_7000.add(npmExec);
+        		deps_cmd_7000.add("install");
+				deps_cmd_7000.add(path);
+				commandLenght = path.length();
+
+			}
+
+			if(deps.indexOf(path) == (deps.size() - 1))
+			{
+				new ProcessExecutor()
+					.name("Dependency installation - Last Batch")
+					.directory(project.getBasedir())
+					.command(deps_cmd_7000)
+					.execute(getLog());
+
+			}
+		}
     }
 }

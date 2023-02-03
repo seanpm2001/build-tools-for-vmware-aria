@@ -81,6 +81,20 @@ If you build project with polyglot + typescript-project-all the build will succe
 
 None
 
+### Fix error Command line is too long
+
+#### Previous Behavior
+
+If you build the project with lot of dependencies which exceeds the command line text limitation of 8191 the build will fail with Command line is too long error
+
+#### New Behavior
+
+If you build project with any number of dependencies the build will succeed
+
+#### Relevant Documentation
+
+None
+
 ## Upgrade procedure:
 [//]: # (Explain in details if something needs to be done)
 
