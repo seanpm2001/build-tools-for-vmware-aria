@@ -59,11 +59,14 @@ import com.vmware.pscoe.iac.artifact.rest.model.vrops.ResourcesDTO;
 
 public class RestClientVrliPrimitive extends RestClient {
     private static final Logger logger = LoggerFactory.getLogger(RestClientVrliPrimitive.class);
-    private static final String API_PREFIX = "/api/v1";
-    private static final String VRLI_VERSION = API_PREFIX + "/version";
-    private static final String ALERTS_API = API_PREFIX + "/alerts";
-    private static final String CONTENT_PACKS_API = API_PREFIX + "/content/contentpack";
-    private static final String CONTENT_PACKS_LIST_API = API_PREFIX + "/content/contentpack/list";
+    private static final String API_V1_PREFIX = "/api/v1";
+    private static final String API_V2_PREFIX = "/api/v2";
+
+    private static final String VRLI_VERSION = API_V1_PREFIX + "/version";
+    private static final String ALERTS_V1_API = API_V1_PREFIX + "/alerts";
+    private static final String ALERTS_V2_API = API_V2_PREFIX + "/alerts";
+    private static final String CONTENT_PACKS_API = API_V1_PREFIX + "/content/contentpack";
+    private static final String CONTENT_PACKS_LIST_API = API_V1_PREFIX + "/content/contentpack/list";
 
     private static final String MAP_ALERT_DATA_ERROR = "Unable to map alert data";
     private static final String PROCESS_ALERT_DATA_ERROR = "Unable to process alert data";
@@ -71,7 +74,7 @@ public class RestClientVrliPrimitive extends RestClient {
     private static final String PROCESS_CONTENT_PACK_DATA_ERROR = "Unable to process content pack data";
 
     private static final String VRLI_RESOURCE_KEY_TYPE = "LogInsight Server";
-    private static final String VRLI_88_VERSION = "8.8";
+    private static final String VRLI_88_VERSION = "8.8.0";
 
     private ConfigurationVrli configuration;
     private RestTemplate restTemplate;
@@ -153,7 +156,13 @@ public class RestClientVrliPrimitive extends RestClient {
     }
 
     protected List<AlertDTO> getAllAlertsPrimitive() {
-        URI url = getURI(getURIBuilder().setPath(ALERTS_API));
+        String version = this.getVersion();
+        URI url;
+        if (!StringUtils.isEmpty(version) && Version.compareSemanticVersions(version, VRLI_88_VERSION) == -1) {
+            url = getURI(getURIBuilder().setPath(ALERTS_V1_API));
+        } else {
+            url = getURI(getURIBuilder().setPath(ALERTS_V2_API));
+        }
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, getDefaultHttpEntity(), String.class);
 
         return deserializeAlerts(response.getBody());
@@ -208,7 +217,13 @@ public class RestClientVrliPrimitive extends RestClient {
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response;
-        String deleteAlertUri = String.format(ALERTS_API + "/%s", alertId);
+        String version = this.getVersion();
+        String deleteAlertUri;
+        if (!StringUtils.isEmpty(version) && Version.compareSemanticVersions(version, VRLI_88_VERSION) == -1) {
+            deleteAlertUri = String.format(ALERTS_V1_API + "/%s", alertId);
+        } else {
+            deleteAlertUri = String.format(ALERTS_V2_API + "/%s", alertId);
+        }
         logger.info("Deleting existing alert {}", alertId);
         try {
             URI url = getURIBuilder().setPath(deleteAlertUri).build();
@@ -243,7 +258,13 @@ public class RestClientVrliPrimitive extends RestClient {
         HttpEntity<String> entity = new HttpEntity<>(alertJson, headers);
         ResponseEntity<String> response;
         try {
-            URI url = getURIBuilder().setPath(ALERTS_API).build();
+            URI url;
+            String version = this.getVersion();
+            if (!StringUtils.isEmpty(version) && Version.compareSemanticVersions(version, VRLI_88_VERSION) == -1) {
+                url = getURIBuilder().setPath(ALERTS_V1_API).build();
+            } else {
+                url = getURIBuilder().setPath(ALERTS_V2_API).build();
+            }
             response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
         } catch (RestClientException e) {
             throw new RuntimeException(String.format("Unable to insert/update alert, error: %s", e.getMessage()), e);

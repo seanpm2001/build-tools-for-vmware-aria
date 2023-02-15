@@ -18,6 +18,8 @@ package com.vmware.pscoe.iac.artifact.rest.model.vrli;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -31,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ "id", "enabled", "emailEnabled", "vcopsEnabled", "alertType", "name", "hitCount", "hitOperator", "searchPeriod", "searchInterval",
         "emails", "info", "recommendation", "vcopsResourceName", "vcopsResourceKindKey", "vcopsCriticality", "lastRanAt", "lastRanAtString", "nextRunAt",
         "nextRunAtString", "runCount", "lastRunTime", "totalRunTime", "lastHitTimestamp", "lastHitTimestampString", "ownerUuid", "ownerName", "webhookEnabled",
-        "webhookURLs", "autoClearAlertAfterTimeout", "chartQuery", "messageQuery", "autoClearAlertsTimeoutMinutes" })
+        "webhookURLs", "autoClearAlertAfterTimeout", "chartQuery", "messageQuery", "autoClearAlertsTimeoutMinutes", "stats", "recipients", "query" })
 public class AlertDTO implements Serializable {
     private static final long serialVersionUID = 1913969984744233760L;
 
@@ -133,6 +135,15 @@ public class AlertDTO implements Serializable {
 
     @JsonProperty("autoClearAlertsTimeoutMinutes")
     private int autoClearAlertsTimeoutMinutes;
+
+    @JsonProperty("stats")
+    private Stats stats;
+
+    @JsonProperty("recipients")
+    private Recipients recipients;
+
+    @JsonProperty("query")
+    private Query query;
 
     @JsonIgnore
     private transient Map<String, Object> additionalProperties = new HashMap<>();
@@ -469,5 +480,276 @@ public class AlertDTO implements Serializable {
     @JsonAnySetter
     public void setAdditionalProperties(String name, Object value) {
         this.additionalProperties.put(name, value);
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonPropertyOrder({ "vcopsResourceName", "vcopsResourceKindKey", "vcopsCriticality", "autoClearAlertAfterTimeout", "autoClearAlertsTimeoutMinutes" })
+    private static class Vrops implements Serializable {
+        private static final long serialVersionUID = -7580181067351390121L;
+
+        @JsonProperty("vcopsResourceName")
+        private String vcopsResourceName;
+
+        @JsonProperty("vcopsResourceKindKey")
+        private String vcopsResourceKindKey;
+
+        @JsonProperty("vcopsCriticality")
+        private String vcopsCriticality;
+
+        @JsonProperty("autoClearAlertAfterTimeout")
+        private Boolean autoClearAlertAfterTimeout;
+
+        @JsonProperty("autoClearAlertsTimeoutMinutes")
+        private Integer autoClearAlertsTimeoutMinutes;
+
+        @JsonIgnore
+        private transient Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+
+        @JsonProperty("vcopsResourceName")
+        public String getVcopsResourceName() {
+            return vcopsResourceName;
+        }
+
+        @JsonProperty("vcopsResourceName")
+        public void setVcopsResourceName(String vcopsResourceName) {
+            this.vcopsResourceName = vcopsResourceName;
+        }
+
+        @JsonProperty("vcopsResourceKindKey")
+        public String getVcopsResourceKindKey() {
+            return vcopsResourceKindKey;
+        }
+
+        @JsonProperty("vcopsResourceKindKey")
+        public void setVcopsResourceKindKey(String vcopsResourceKindKey) {
+            this.vcopsResourceKindKey = vcopsResourceKindKey;
+        }
+
+        @JsonProperty("vcopsCriticality")
+        public String getVcopsCriticality() {
+            return vcopsCriticality;
+        }
+
+        @JsonProperty("vcopsCriticality")
+        public void setVcopsCriticality(String vcopsCriticality) {
+            this.vcopsCriticality = vcopsCriticality;
+        }
+
+        @JsonProperty("autoClearAlertAfterTimeout")
+        public Boolean getAutoClearAlertAfterTimeout() {
+            return autoClearAlertAfterTimeout;
+        }
+
+        @JsonProperty("autoClearAlertAfterTimeout")
+        public void setAutoClearAlertAfterTimeout(Boolean autoClearAlertAfterTimeout) {
+            this.autoClearAlertAfterTimeout = autoClearAlertAfterTimeout;
+        }
+
+        @JsonProperty("autoClearAlertsTimeoutMinutes")
+        public Integer getAutoClearAlertsTimeoutMinutes() {
+            return autoClearAlertsTimeoutMinutes;
+        }
+
+        @JsonProperty("autoClearAlertsTimeoutMinutes")
+        public void setAutoClearAlertsTimeoutMinutes(Integer autoClearAlertsTimeoutMinutes) {
+            this.autoClearAlertsTimeoutMinutes = autoClearAlertsTimeoutMinutes;
+        }
+
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, Object value) {
+            this.additionalProperties.put(name, value);
+        }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonPropertyOrder({ "emails", "webhookIds", "vrops" })
+    private static class Recipients implements Serializable {
+        private static final long serialVersionUID = 1751713743281566947L;
+
+        @JsonProperty("emails")
+        private List<String> emails;
+
+        @JsonProperty("webhookIds")
+        private List<String> webhookIds;
+
+        @JsonProperty("vrops")
+        private Vrops vrops;
+
+        @JsonIgnore
+        private transient Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+
+        @JsonProperty("emails")
+        public List<String> getEmails() {
+            return emails;
+        }
+
+        @JsonProperty("emails")
+        public void setEmails(List<String> emails) {
+            this.emails = emails;
+        }
+
+        @JsonProperty("webhookIds")
+        public List<String> getWebhookIds() {
+            return webhookIds;
+        }
+
+        @JsonProperty("webhookIds")
+        public void setWebhookIds(List<String> webhookIds) {
+            this.webhookIds = webhookIds;
+        }
+
+        @JsonProperty("vrops")
+        public Vrops getVrops() {
+            return vrops;
+        }
+
+        @JsonProperty("vrops")
+        public void setVrops(Vrops vrops) {
+            this.vrops = vrops;
+        }
+
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, Object value) {
+            this.additionalProperties.put(name, value);
+        }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonPropertyOrder({ "lastRanAt", "nextRunAt", "lastRunTime", "totalRunTime", "lastHitAt", "runCount" })
+    private static class Stats implements Serializable {
+        private static final long serialVersionUID = -9128958358096986108L;
+
+        @JsonProperty("lastRanAt")
+        private Long lastRanAt;
+
+        @JsonProperty("nextRunAt")
+        private Long nextRunAt;
+
+        @JsonProperty("lastRunTime")
+        private Integer lastRunTime;
+
+        @JsonProperty("totalRunTime")
+        private Integer totalRunTime;
+
+        @JsonProperty("lastHitAt")
+        private Long lastHitAt;
+
+        @JsonProperty("runCount")
+        private Integer runCount;
+
+        @JsonIgnore
+        private transient Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+
+        @JsonProperty("lastRanAt")
+        public Long getLastRanAt() {
+            return lastRanAt;
+        }
+
+        @JsonProperty("lastRanAt")
+        public void setLastRanAt(Long lastRanAt) {
+            this.lastRanAt = lastRanAt;
+        }
+
+        @JsonProperty("nextRunAt")
+        public Long getNextRunAt() {
+            return nextRunAt;
+        }
+
+        @JsonProperty("nextRunAt")
+        public void setNextRunAt(Long nextRunAt) {
+            this.nextRunAt = nextRunAt;
+        }
+
+        @JsonProperty("lastRunTime")
+        public Integer getLastRunTime() {
+            return lastRunTime;
+        }
+
+        @JsonProperty("lastRunTime")
+        public void setLastRunTime(Integer lastRunTime) {
+            this.lastRunTime = lastRunTime;
+        }
+
+        @JsonProperty("totalRunTime")
+        public Integer getTotalRunTime() {
+            return totalRunTime;
+        }
+
+        @JsonProperty("totalRunTime")
+        public void setTotalRunTime(Integer totalRunTime) {
+            this.totalRunTime = totalRunTime;
+        }
+
+        @JsonProperty("lastHitAt")
+        public Long getLastHitAt() {
+            return lastHitAt;
+        }
+
+        @JsonProperty("lastHitAt")
+        public void setLastHitAt(Long lastHitAt) {
+            this.lastHitAt = lastHitAt;
+        }
+
+        @JsonProperty("runCount")
+        public Integer getRunCount() {
+            return runCount;
+        }
+
+        @JsonProperty("runCount")
+        public void setRunCount(Integer runCount) {
+            this.runCount = runCount;
+        }
+
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, Object value) {
+            this.additionalProperties.put(name, value);
+        }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonPropertyOrder({ "chartQuery" })
+    private static class Query implements Serializable {
+        private static final long serialVersionUID = 1819442994912202445L;
+
+        @JsonProperty("chartQuery")
+        private String chartQuery;
+
+        @JsonIgnore
+        private transient Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+
+        @JsonProperty("chartQuery")
+        public String getChartQuery() {
+            return chartQuery;
+        }
+
+        @JsonProperty("chartQuery")
+        public void setChartQuery(String chartQuery) {
+            this.chartQuery = chartQuery;
+        }
+
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, Object value) {
+            this.additionalProperties.put(name, value);
+        }
     }
 }
