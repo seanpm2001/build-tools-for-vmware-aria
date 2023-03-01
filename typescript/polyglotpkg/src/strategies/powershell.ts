@@ -103,6 +103,9 @@ export class PowershellStrategy extends BaseStrategy {
         if (modules.length > 0) {
             fs.ensureDirSync(modulesPath);
             this.logger.info(`Downloading and saving dependencies in "${modulesPath}..."`);
+            if(polyglotJson.platform.protocolType){
+                await run("pwsh", ["-c", `[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::${polyglotJson.platform.protocolType}`]);
+            }
             await run("pwsh", ["-c", "Save-Module", "-Name", `"${modules.toString()}"`, "-Path", `"${modulesPath}"`, "-Repository PSGallery"]);
         } else {
             this.logger.info("No change in dependencies. Skipping installation...");
