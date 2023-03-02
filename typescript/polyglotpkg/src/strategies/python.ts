@@ -144,7 +144,7 @@ export class PythonStrategy extends BaseStrategy {
         const existingHash = await this.readDepsHash(this.DEPENDENCY_TEMP_DIR);
         if (existingHash !== hash) {
             this.logger.info("Installing dependencies...");
-            await run("pip3", ["install", "-r", `"${depsManifest}"`, "--target", `"${this.DEPENDENCY_TEMP_DIR}"`, "--upgrade"]);
+            await run([{cmd: "pip3", args: ["install", "-r", `"${depsManifest}"`, "--target", `"${this.DEPENDENCY_TEMP_DIR}"`, "--upgrade"]}]);
             await this.writeDepsHash(deps.toString());
         } else {
             this.logger.info("No change in dependencies. Skipping installation...");

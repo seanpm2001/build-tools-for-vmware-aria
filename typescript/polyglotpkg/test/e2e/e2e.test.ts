@@ -13,17 +13,28 @@ describe('E2E Tests', () => {
 
             beforeEach(`Cleaning up ${runtime}`, async () => {
                 process.chdir(processCwd);
-                await run('npm', ['run', 'clean'], path.join('test', 'e2e', runtime))
+                await run([{cmd: 'npm', args: ['run', 'clean']}], path.join('test', 'e2e', runtime))
             })
 
             it(`Packaging ${runtime}`, async () => {
                 const projectDir = path.resolve('test', 'e2e', runtime);
                 process.chdir(projectDir);
                 const environment = ["abxpython", "abx_all", "nodejs", "python", "powershell"].indexOf(runtime) != -1 ? "abx": "vro";
-                await run('../../../bin/polyglotpkg', ['-e', environment]);
+
+                // Add the commands to run in sequence here
+                const commands = [
+                    [{cmd: '../../../bin/polyglotpkg', args:['-e', environment]}],
+                    [{cmd: 'echo', args: ['Command 2']}],
+                    [{cmd: 'echo', args: ['Command 3']}]
+                ];
+
+                for (const command of commands) {
+                    await run(command);
+                }
             })
 
         })
     })
 
 });
+

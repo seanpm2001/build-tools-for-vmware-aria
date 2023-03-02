@@ -99,14 +99,16 @@ export class PowershellStrategy extends BaseStrategy {
         });
 
         this.logger.info(`Powershell modules included: ${modules}`);
-
+        let commandsToRun = [];
         if (modules.length > 0) {
             fs.ensureDirSync(modulesPath);
             this.logger.info(`Downloading and saving dependencies in "${modulesPath}..."`);
             if(polyglotJson.platform.protocolType){
-                await run("pwsh", ["-c", `[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::${polyglotJson.platform.protocolType}`]);
+                this.logger.info(`Setting Security Protocol to ${polyglotJson.platform.protocolType}`);
+                commandsToRun.push({cmd: "pwsh", args: ["-c", `[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::${polyglotJson.platform.protocolType}`]});
             }
-            await run("pwsh", ["-c", "Save-Module", "-Name", `"${modules.toString()}"`, "-Path", `"${modulesPath}"`, "-Repository PSGallery"]);
+            commandsToRun.push({cmd: "pwsh", args: ["-c", "Save-Module", "-Name", `"${modules.toString()}"`, "-Path", `"${modulesPath}"`, "-Repository PSGallery"]});
+            await run(commandsToRun);
         } else {
             this.logger.info("No change in dependencies. Skipping installation...");
         }

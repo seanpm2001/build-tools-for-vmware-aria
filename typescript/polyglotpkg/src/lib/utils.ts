@@ -253,24 +253,26 @@ export function notUndefined<T>(x: T | undefined): x is T {
  * Run external command and wait for it to complete
  * @param cmd
  */
-export function run(cmd: string, args: Array<string> = [], cwd: string = process.cwd()): Promise<number> {
+ export function run(commands: { cmd: string; args: string[] }[], cwd: string = process.cwd()): Promise<number> {
     return new Promise((resolve, reject) => {
-        which(cmd, { all: true }, (err: Error | null, commandPath: string[] | undefined) => {
-            if (err || !commandPath) {
-                return reject(new Error(`Cannot find "${cmd}"`));
-            }
-            const proc = spawn(quoteString(commandPath[0]), args, { cwd, shell: true, stdio: 'inherit' });
-            proc.on('close', exitCode => {
-                if (exitCode !== 0) {
-                    const commandLine = `${quoteString(commandPath[0])} ${args.join(' ')}`;
-                    logger.error(`Error running command: ${commandLine}`);
-                    return reject(new Error(`Exit code for ${cmd}: ${exitCode}`));
-                }
-                resolve(exitCode);
-            });
-        });
+      let commandLine = '';
+      for (const { cmd, args } of commands) {
+        const argString = args.map(arg => quoteString(arg)).join(' ');
+        commandLine += `${quoteString(cmd)} ${argString}; `;
+      }
+      logger.info(`About to run command: ${commandLine}`);
+      const proc = spawn(commandLine, [], { cwd, shell: true, stdio: 'inherit' });
+      proc.on('close', exitCode => {
+        if (exitCode !== 0) {
+          logger.error(`Error running command: ${commandLine}`);
+          return reject(new Error(`Exit code: ${exitCode}`));
+        }
+        resolve(exitCode);
+      });
     });
-}
+  }
+  
+
 
 function quoteString(str: string) {
     return /\s+/.test(str) ? `"${str}"` : str;

@@ -200,7 +200,7 @@ export class NodejsStrategy extends BaseStrategy {
         if (existingHash !== hash) {
             this.logger.info(`Installing dependencies at ${depsCacheDir}`);
             await fs.writeJsonSync(path.join(depsCacheDir, 'package.json'), packageJson);
-            await run("npm", ["install", "--production"], depsCacheDir);
+            await run([{cmd: "npm", args: ["install", "--production"]}], depsCacheDir);
             await this.writeDepsHash(deps);
         } else {
             this.logger.info("No change in dependencies. Skipping installation...");
