@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.vmware.pscoe.iac.artifact.configuration.ConfigurationVraNg;
 import com.vmware.pscoe.iac.artifact.model.Package;
+import com.vmware.pscoe.iac.artifact.model.abx.AbxAction;
 import com.vmware.pscoe.iac.artifact.model.vrang.VraNgPackageDescriptor;
 import com.vmware.pscoe.iac.artifact.model.vrang.VraNgProject;
 import com.vmware.pscoe.iac.artifact.model.vrang.VraNgSubscription;
@@ -174,6 +175,7 @@ public class VraNgSubscriptionStore extends AbstractVraNgStore {
             logger.info("Trying to importing subscription '{}' with ID {}...", subscriptionName, subscriptionId);
 
             substituteProjects(subscriptionJsonElement);
+            addRunnableId(subscriptionJsonElement);
             subscriptionContent = gson.toJson(subscriptionJsonElement);
             restClient.importSubscription(subscriptionName, subscriptionContent);
             logger.debug("Subscription '{}' imported successfully.", subscriptionName);
@@ -184,6 +186,24 @@ public class VraNgSubscriptionStore extends AbstractVraNgStore {
         }
     }
 
+    private void addRunnableId(JsonObject subscriptionJsonElement) {
+        JsonElement runnableTypeElement = subscriptionJsonElement.get("runnableType");
+        if (!runnableTypeElement.getAsString().contains("extensibility.abx")) {
+            return;
+        }
+        JsonElement runnableNameElement = subscriptionJsonElement.get("runnableName");
+        List<AbxAction> actions = restClient.getAllAbxActions().stream()
+                .filter(a -> a.name.equals(runnableNameElement.getAsString()))
+                .collect(Collectors.toList());
+
+        if (actions.size() == 0) {
+            throw new RuntimeException("Abx actions with the specified Name can not be found");
+        }
+
+        subscriptionJsonElement.remove("runnableName");
+        subscriptionJsonElement.addProperty("runnableId", actions.get(0).id);
+    }
+        
     private String generateId(JsonObject subscriptionJsonElement, Map<String, VraNgSubscription> allSubscriptions) {
         String subscriptionId = null;
         String subscriptionName = subscriptionJsonElement.get("name").getAsString();
