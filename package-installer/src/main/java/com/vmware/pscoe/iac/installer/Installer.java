@@ -170,6 +170,9 @@ enum Option {
     VRLI_PASSWORD(
             "vrli_password",
             Configuration.PASSWORD),
+    VRLI_PACKAGE_IMPORT_OVERWRITE_MODE(
+            "vrli_package_import_overwrite_mode",
+            ConfigurationVrli.PACKAGE_IMPORT_OVERWRITE_MODE),
     VRLI_VROPS_INTEGRATION_HOST(
             "vrli_vrops_server",
             ConfigurationVrli.INTEGRATION_VROPS_HOST),
@@ -764,9 +767,8 @@ public class Installer {
             userInput(input, Option.VRANG_IMPORT, "Import vRA8 packages?", true);
           
         }
-    
-		if (input.anyTrue(Option.CS_IMPORT)) {
-            input.put(Option.VRO_EMBEDDED, Boolean.TRUE);
+
+        if (input.anyTrue(Option.VRANG_IMPORT, Option.CS_IMPORT)) {
             readVrangProperties(input);
         }
         if (input.anyTrue(Option.VRANG_IMPORT)){
@@ -779,13 +781,10 @@ public class Installer {
         //  +-------------------------------------
         //  |  vRealize Orchestrator
         //  +-------------------------------------
-		
-        if(!getFilesystemPackages(PackageType.VRO).isEmpty()){
+		if(!getFilesystemPackages(PackageType.VRO).isEmpty()){
             userInput(input, Option.VRO_IMPORT, "Import vRO packages?", true);
             if (input.anyTrue(Option.VRO_IMPORT)) {
-                if(hasVraNgPackages){
-                    userInput(input, Option.VRO_EMBEDDED, "Is vRO Embedded (in vRA)?", hasVraNgPackages);
-                }
+                userInput(input, Option.VRO_EMBEDDED, "Is vRO Embedded (in vRA)?", hasVraNgPackages);
                 if (input.anyTrue(Option.VRO_EMBEDDED)) {
                     readVroEmbeddedInVrangProperties(input, false);
                 } else {
@@ -1044,6 +1043,7 @@ public class Installer {
         userInput(input, Option.VRLI_USERNAME, "  vRLI Username");
         passInput(input, Option.VRLI_PASSWORD, "  vRLI Password");
         userInput(input, Option.VRLI_PROVIDER, "  vRLI Provider", "Local");
+        userInput(input, Option.VRLI_PACKAGE_IMPORT_OVERWRITE_MODE, "  vRLI Package Overwrite Mode", "OVERWRITE");
 
         // vROps integration for vRLI settings
         userInput(input, Option.VRLI_VROPS_INTEGRATION_HOST, "  vROps integration FQDN");
