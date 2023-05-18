@@ -36,29 +36,26 @@ public abstract class AbstractInstallNodeDepsMojo extends AbstractIacMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         boolean allTgzLibsResolved = true;
-		int commandLenght = 0;
+		int commandLength = 0;
         File nodeModules = new File(project.getBasedir(), "node_modules");
-		if(skipInstallNodeDeps)
+		if (skipInstallNodeDeps)
 		{
-			if(nodeModules.exists())
-			{
+			if (nodeModules.exists()) {
 				getLog().info("Skipping the Dependency installation");
 				return;
-			}
-			else
-			{
+			} else {
 				getLog().info("Ignoring the flag skipInstallNodeDeps," +
 				 "as node dependencies doesn't exist and are required for the successful build...");
 			}
-			
 		}
+
         if (!nodeModules.exists()) {
             getLog().debug("node_modules doesn't exists. Creating it...");
             nodeModules.mkdirs();
         }
 		
         List<String> deps = new LinkedList<>();
-		List<String> deps_cmd_7000 = new LinkedList<>();
+		List<String> depsCmdMax7000 = new LinkedList<>();
 
         String npmExec = SystemUtils.IS_OS_WINDOWS ? "npm.cmd" : "npm";
         deps.add(npmExec);
@@ -70,6 +67,7 @@ public abstract class AbstractInstallNodeDepsMojo extends AbstractIacMojo {
                 allTgzLibsResolved = allTgzLibsResolved && a.isResolved();
             }
         }
+
         if (!getLog().isDebugEnabled()) {
             deps.add("--silent");
         }
@@ -84,44 +82,36 @@ public abstract class AbstractInstallNodeDepsMojo extends AbstractIacMojo {
 				.execute(getLog());
         }
 
-        getLog().info("deps length  " + deps.stream().mapToInt(String:: length).sum());
+        getLog().debug("Dependencies length:  " + deps.stream().mapToInt(String::length).sum());
 
-		for(String path : deps)
-		{
-			commandLenght = commandLenght + path.length();
-			if(commandLenght <= 7000)
-			{
-				deps_cmd_7000.add(path);
-			}
-			else
-			{
-				
+		for (String path : deps) {
+			commandLength = commandLength + path.length();
+			if (commandLength <= 7000) {
+				depsCmdMax7000.add(path);
+			} else {
 				new ProcessExecutor()
 					.name("Dependency installation - Command Length is less than or equal 7000")
 					.directory(project.getBasedir())
 					.throwOnError(true)
-					.command(deps_cmd_7000)
+					.command(depsCmdMax7000)
 					.execute(getLog());
 
-				deps_cmd_7000 = new LinkedList<>();
-				deps_cmd_7000.add(npmExec);
-        		deps_cmd_7000.add("install");
-				deps_cmd_7000.add(path);
-				commandLenght = path.length();
-
+				depsCmdMax7000 = new LinkedList<>();
+				depsCmdMax7000.add(npmExec);
+        		depsCmdMax7000.add("install");
+				depsCmdMax7000.add(path);
+				commandLength = path.length();
 			}
 
-			if(deps.indexOf(path) == (deps.size() - 1))
+			if (deps.indexOf(path) == (deps.size() - 1))
 			{
 				new ProcessExecutor()
 					.name("Dependency installation - Last Batch")
 					.directory(project.getBasedir())
 					.throwOnError(true)
-					.command(deps_cmd_7000)
+					.command(depsCmdMax7000)
 					.execute(getLog());
-
 			}
 		}
-       
     }
 }

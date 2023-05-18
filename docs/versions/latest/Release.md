@@ -49,7 +49,7 @@ If you build the project with lot of dependencies which exceeds the command line
 
 #### New Behavior
 
-If you build project with any number of dependencies the build will succeed
+If you build project with a large number of dependencies, the build will succeed since we are splitting the command in separate commands. Each command can have up to 7000 characters which is below the 8191 limitation.
 
 #### Relevant Documentation
 
