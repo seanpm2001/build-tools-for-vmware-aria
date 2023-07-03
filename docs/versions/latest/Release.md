@@ -10,11 +10,9 @@
 [//]: # (You can utilize internal links /e.g. link to the upgrade procedure, link to the improvement|deprecation that introduced this/)
 
 
-
 ## Deprecations
 [//]: # (### *Deprecation*)
 [//]: # (Explain what is deprecated and suggest alternatives)
-
 
 
 [//]: # (Features -> New Functionality)
@@ -23,7 +21,6 @@
 [//]: # (Describe the feature)
 [//]: # (Optional But higlhy recommended Specify *NONE* if missing)
 [//]: # (#### Relevant Documentation:)
-
 
 
 [//]: # (Improvements -> Bugfixes/hotfixes or general improvements)
@@ -40,6 +37,19 @@
 [//]: # (#### Relevant Documentation:)
 
 
+### Fix error Command line is too long
+
+#### Previous Behavior
+
+If you build the project with lot of dependencies which exceeds the command line text limitation of 8191 the build will fail with Command line is too long error
+
+#### New Behavior
+
+If you build project with a large number of dependencies, the build will succeed since we are splitting the command in separate commands. Each command can have up to 7000 characters which is below the 8191 limitation.
+
+#### Relevant Documentation
+
+None
 
 ### Fix error Command line is too long
 
@@ -56,6 +66,7 @@ If you build project with a large number of dependencies, the build will succeed
 None
 
 ## Upgrade procedure:
+## Upgrade procedure
 [//]: # (Explain in details if something needs to be done)
 
 [//]: # (## Changelog:)
