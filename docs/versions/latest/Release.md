@@ -100,6 +100,51 @@ Reference: [VMware Cloud Director 10.5 Release Notes](https://docs.vmware.com/en
 #### New Behavior
 * When fetching catalog items from vRA server and the page size is below the available items, the result contains unique items only.
 
+### Upgrade VCD archetype to support Angular 15
+VMware Cloud Director v10.6 is going to drop support for Angular v9 or less.
+
+#### Previous Behaviour
+VMware Cloud Director archetype is using:
+* node v12
+* angular v8
+* clarity v2
+* rxjs v6
+* webpack v4
+
+The old archetype can still be bootstrapped with:
+`mvn archetype:generate \
+    -DinteractiveMode=false \
+    -DarchetypeGroupId=com.vmware.pscoe.vcd.archetypes \
+    -DarchetypeArtifactId=package-vcd-ng-angular8-archetype \
+    -DgroupId=org.example \
+    -DartifactId=sample \
+    -DlicenseUrl= \
+    -DlicenseHeader= \
+    -DlicenseTechnicalPreview=false`
+
+#### Current Behaviour
+VMware Cloud Director archetype is using:
+* node v16+
+* angular v15
+* clarity v15
+* rxjs v7
+* webpack v5
+
+The new archetype can be bootstrapped with:
+`mvn archetype:generate \
+    -DinteractiveMode=false \
+    -DarchetypeGroupId=com.vmware.pscoe.vcd.archetypes \
+    -DarchetypeArtifactId=package-vcd-ng-archetype \
+    -DgroupId=org.example \
+    -DartifactId=sample \
+    -DlicenseUrl= \
+    -DlicenseHeader= \
+    -DlicenseTechnicalPreview=false`
+
+
+#### Related issue
+<https://github.com/vmware/build-tools-for-vmware-aria/issues/180>
+
 ## Upgrade procedure
 [//]: # (Explain in details if something needs to be done)
 

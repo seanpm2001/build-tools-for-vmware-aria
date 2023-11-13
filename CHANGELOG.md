@@ -1,5 +1,6 @@
 ### Enhancements
 [docs] IAC-800 - Document TS Array functions behaviour and recommended typization approach.
+* [artifact-manager] IAC-796 / Upgrade VCD archetype to support Angular 15
 
 ### Fixes
 * [packages/ecmascript] IAC-803 / Updated `Array.from()` to create shallow clone and to properly handle string, Map and Set input.
@@ -14,12 +15,13 @@
 * [artifact-manager] IAC-788 / Improved Handling of Empty vRA Blueprint Versions for vRA 8.12.x.
 * [artifact-manager] IAC-801 / Fix vRA catalog items appearing twice on multi page results.
 
+## v2.35.2
 ### Enhancements
 * [vro-types/o11n-plugin-aria] IAC-789 / Adding new Aria Automation Plugin vRO inventory Types.
 * [vro-types/o11n-plugin-aria] IAC-798 / Deprecating SQLDatabaseManager getDatabase() function.
 * [artifact-manager] IAC-786 / Set Aria Operations Default Policy vROPs 8.12.x.
 * [artifact-manager] IAC-790 / Update usage of deprecated policy APIs for vROPs 8.12.x.
-* [archetypes] IAC-797 / Improved content.yaml definition for "ts-vra-ng" and "vra-ng".
+* [archetypes] IAC-797 / Improved content.yaml definition for "ts-vra-ng" and "vra-ng"
 
 ### Bugs
 * [o11n-plugin-ssh] session esxiCode returns type void() instead of number.
