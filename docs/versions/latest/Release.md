@@ -9,13 +9,9 @@
 [//]: # (Describe the breaking change AND explain how to resolve it)
 [//]: # (You can utilize internal links /e.g. link to the upgrade procedure, link to the improvement|deprecation that introduced this/)
 
-
-
 ## Deprecations
 [//]: # (### *Deprecation*)
 [//]: # (Explain what is deprecated and suggest alternatives)
-
-
 
 [//]: # (Features -> New Functionality)
 ## Features
@@ -24,42 +20,60 @@
 [//]: # (Optional But higlhy recommended Specify *NONE* if missing)
 [//]: # (#### Relevant Documentation:)
 
-
-
 [//]: # (Improvements -> Bugfixes/hotfixes or general improvements)
 ## Improvements
 
-### *vrealize:clean will not fail if store does not support it* 
-When we perform `mvn vrealize:clean -DincludeDependencies=true -DcleanUpOldVersions=true -DcleanUpLastVersion=false -PPROFILE_NAME`
-some stores do not support cleaning or have not implemented it.
+### Wrong unix file path separators when creating backup path
+
+#### Previous Behaviour
+The backup files/folder path on are always created with "\". This is cuasing wrong file names on unix.
+
+#### Current Behaviour
+Files and folders are created with the system dependent separator.
+
+### Transpiler fails to convert Array functions to vRO compatible code
+
+The transpilation issue is documented and a recommended fix together with a configuration that can prevent it is described.
+
+### Updated `Array.from()` to create shallow clone and to properly handle `string`, `Map<K, V>` and `Set<T>` input according to official documentation
 
 #### Previous Behavior
-Previously in case of an unsupported store, the process would fail with either UnsupportedOperationException or NotImplementedException,
-since the exception was never handled in the vrealize CleanMojo
+* Calling `Array.from()` doesn't create a shallow clone.
+* Calling `Array.from()` with string input returns the same input instead of character array.
+* Calling `Array.from()` with `Map<K, V>` and mapping function input throws `TypeError: Cannot find function map in object...`.
+* Calling `Array.from()` with `Set<T>` and mapping function input throws `TypeError: Cannot find function map in object...`.
 
 #### New Behavior
-UnsupportedOperationException is now being caught (NotImplementedException as well since it's a child) and a warning is logged instead.
-The process is allowed to continue.
+* Calling `Array.from()` creates a shallow clone.
+* Calling `Array.from()` with string input returns an array of characters.
+* Calling `Array.from()` with `Map<K, V>` and mapping function returns an array of key-value pairs.
+* Calling `Array.from()` with `Set<T>` and mapping function returns an array of unique values.
 
-#### Relevant Documentation:
-
-* [Vrealize Clean](./Components/Archetypes/General/Goals/Vrealize%20Clean.md)
-
-
-
-### *Ability to deploy base package to artifactory*
-It's expected that you can deploy all Build Tools for VMware Aria projects to artifactory and to local maven repository
+### Fixed backup of vRO packages so that the all available version are backed up
 
 #### Previous Behavior
-When you trigger `mvn clean package install deploy` against base package, the build will fail
+Back up of vRO packages (using the flag in the environment.properties file: vro_enable_backup=true)
+would only work if the currently imported packages (which are to back up), had the same version as the one in vRO.
+Otherwise, the import would throw an '404 Not found' exception and break the import process,
+due to not finding the same package and version to back up.
 
 #### New Behavior
-When you trigger `mvn clean package install deploy` against base package, the build will succeed and will deploy the package to artifactory server and to local maven repository.
+Back up of vRO packages now works by:
+* backing up all available versions in vRO of the imported package,
+* logging a message that back up is skipped for the package, if no versions of it are found in vRO, continuing with backup of next packages, and the import process.
 
-#### Relevant Documentation:
-None
+[//]: # (### *Improvement Name* )
+[//]: # (Talk ONLY regarding the improvement)
+[//]: # (Optional But higlhy recommended)
+[//]: # (#### Previous Behavior)
+[//]: # (Explain how it used to behave, regarding to the change)
+[//]: # (Optional But higlhy recommended)
+[//]: # (#### New Behavior)
+[//]: # (Explain how it behaves now, regarding to the change)
+[//]: # (Optional But higlhy recommended Specify *NONE* if missing)
+[//]: # (#### Relevant Documentation:)
 
-## Upgrade procedure:
+## Upgrade procedure
 [//]: # (Explain in details if something needs to be done)
 
 [//]: # (## Changelog:)

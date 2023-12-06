@@ -21,9 +21,14 @@
 # Example Property Groups:
 # property-group:
 #  - property-group-1
+# policy:
+#   content-sharing: 
+#     - policy name 1
+#     - policy name 2
 
 blueprint:
-subscription:
+  - Volume
+subscription: []
 flavor-mapping:
   - small
   - medium
@@ -33,9 +38,13 @@ region-mapping:
   cloud-account-tags:
     export-tag: "env:dev"
     import-tags: ["env:dev", "env:test"]
-catalog-item:
-custom-resource:
-resource-action:
-catalog-entitlement:
-content-source:
-property-group:
+catalog-item: []
+custom-resource: []
+resource-action: []
+catalog-entitlement: []
+
+property-group: []
+policy:
+  content-sharing: []
+
+content-source: []
