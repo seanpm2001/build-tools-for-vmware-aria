@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.vmware.pscoe.iac.artifact.store.vrang.VraNgDirs.*;
+import static com.vmware.pscoe.iac.artifact.store.vrang.VraNgDirs.DIR_SUBSCRIPTIONS;
 
 public class VraNgSubscriptionStore extends AbstractVraNgStore {
 
