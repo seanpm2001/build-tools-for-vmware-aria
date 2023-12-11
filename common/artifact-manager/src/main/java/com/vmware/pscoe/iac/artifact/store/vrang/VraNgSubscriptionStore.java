@@ -48,8 +48,19 @@ import static com.vmware.pscoe.iac.artifact.store.vrang.VraNgDirs.*;
 
 public class VraNgSubscriptionStore extends AbstractVraNgStore {
 
+    /**
+     * Contains Id of the current organization.
+     */
     private String currentOrganizationId;
+
+    /**
+     * Contains information about the projects affected by import/export.
+     */
     private List<VraNgProject> projects;
+
+    /**
+     * Contains Id of the main proect.
+     */
     private String configProjectId;
 
     /**
@@ -117,7 +128,9 @@ public class VraNgSubscriptionStore extends AbstractVraNgStore {
 	}
 
     /**
-     * Immports all subscriptions from the source directory
+     * Immports all subscriptions from the source directory.
+     * 
+     * @param sourceDirectory - directory with the subscriptions.
      */
 	public void importContent(File sourceDirectory) {
 		logger.info("Importing files from the '{}' directory", DIR_SUBSCRIPTIONS);
@@ -127,7 +140,7 @@ public class VraNgSubscriptionStore extends AbstractVraNgStore {
 			return;
 		}
 		File[] files = this.filterBasedOnConfiguration(folder, new CustomFolderFileFilter(this.getItemListFromDescriptor()));
-		if ( files == null || files.length == 0) {
+		if (files == null || files.length == 0) {
 			logger.info("Could not find any Subscriptions.");
 			return;
 		}
@@ -211,17 +224,14 @@ public class VraNgSubscriptionStore extends AbstractVraNgStore {
     }
         
     private String generateId(JsonObject subscriptionJsonElement, Map<String, VraNgSubscription> allSubscriptions) {
-        String subscriptionId = null;
+        String subscriptionId = subscriptionJsonElement.get("id").getAsString();
         String subscriptionName = subscriptionJsonElement.get("name").getAsString();
-        if (subscriptionJsonElement.get("id") != null
-                && (subscriptionId = subscriptionJsonElement.get("id").getAsString()) != null) {
+
+        if (subscriptionJsonElement.get("id") != null && subscriptionId != null) {
             subscriptionId = subscriptionId.replaceAll("^[\\w]{8}-[\\w]{4}-[\\w]{4}-[\\w]{4}-[\\w]{12}-", "");
-
-            if (allSubscriptions.get(subscriptionId) != null
-                    && JsonParser.parseString(allSubscriptions.get(subscriptionId).getJson()).getAsJsonObject()
-                            .get("orgId").getAsString().equals(currentOrganizationId)) {
-
-            } else {
+            if (allSubscriptions.get(subscriptionId) == null
+                    || !JsonParser.parseString(allSubscriptions.get(subscriptionId).getJson()).getAsJsonObject()
+                            .get("orgId").getAsString().equals(currentOrganizationId)) {            
                 subscriptionId = this.currentOrganizationId + "-" + subscriptionId;
                 logger.debug("Generating new subscription ID '{}' because subscription exists in different organization.", subscriptionId);
 
@@ -231,7 +241,6 @@ public class VraNgSubscriptionStore extends AbstractVraNgStore {
             logger.debug("Subscription Id is missing. Generate id from organization id and name hashcode: " + subscriptionId);
         }
         return subscriptionId;
-
     }
 
     private void addProjectNamesToStorage(JsonObject subscriptionJsonElement) {
