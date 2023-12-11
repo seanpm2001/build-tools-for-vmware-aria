@@ -146,6 +146,7 @@ public class VraNgSubscriptionStore extends AbstractVraNgStore {
             // orgId is optional when importing in vRA, so it can be safely removed
             subscriptionJsonElement.remove("orgId");
             addProjectNamesToStorage(subscriptionJsonElement);
+            addRunnableNameToStorage(subscriptionJsonElement);
             subscriptionJson = gson.toJson(subscriptionJsonElement);
             logger.info("Created file {}", Files.write(Paths.get(subscription.getPath()), subscriptionJson.getBytes(),
                     StandardOpenOption.CREATE));
@@ -239,6 +240,26 @@ public class VraNgSubscriptionStore extends AbstractVraNgStore {
                 constraintElement.getAsJsonObject().add("projectNames", projectNames);
             }
         }
+    }
+
+    private void addRunnableNameToStorage(JsonObject subscriptionJsonElement) {
+
+        JsonElement runnableTypeElement = subscriptionJsonElement.get("runnableType");
+        if (!runnableTypeElement.getAsString().contains("extensibility.abx")) {
+            return;
+        }
+
+        JsonElement runnableIdElement = subscriptionJsonElement.get("runnableId");
+        List<AbxAction> actions = restClient.getAllAbxActions().stream()
+            .filter(a -> a.id.equals(runnableIdElement.getAsString()))
+            .collect(Collectors.toList());
+
+        if(actions.size() == 0) {
+            throw new RuntimeException("Abx actions with the specified Id can not be found");
+        }
+        
+        subscriptionJsonElement.remove("runnableId");
+        subscriptionJsonElement.addProperty("runnableName", actions.get(0).name);        
     }
 
     private void substituteProjects(JsonObject content) {
