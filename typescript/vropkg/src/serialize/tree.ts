@@ -90,7 +90,7 @@ const serializeTreeElement = async (context: any, element: t.VroNativeElement): 
 		? element.categoryPath
 		: element.categoryPath.map(c => {
 			['\\', ':', '*', '?', '"', '<', '>', '|', '&'].forEach(char => {
-				if (c.includes(char)) {
+				if (typeof c !== "undefined" && c.includes(char)) {
 					throw new Error(`Category path "${c}" includes illegal character "${char}".`);
 				}
 			});
