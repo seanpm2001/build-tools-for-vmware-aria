@@ -86,18 +86,17 @@ const serializeTreeElement = async (context: any, element: t.VroNativeElement): 
 		xInfo.ele("comment").cdata(complexActionComment(element));
 	}
 
-	const notAllowedCharactersList = new Set(['\\', ':', '*', '?', '"', '<', '>', '|', '&']);
-	notAllowedCharactersList.forEach(char => {
-		element.categoryPath.forEach(category => {
-			if (category.includes(char)) {
-				throw new Error(`Category path "${category}" includes illegal character "${char}".`);
-			}
-		});
-	});
-
 	const categoryPathKay = element.type == t.VroElementType.ScriptModule
 		? element.categoryPath
-		: element.categoryPath.map(c => c.replace(/\./g, "/."));
+		: element.categoryPath.map(c => {
+			['\\', ':', '*', '?', '"', '<', '>', '|', '&'].forEach(char => {
+				if (c.includes(char)) {
+					throw new Error(`Category path "${c}" includes illegal character "${char}".`);
+				}
+			});
+
+			return c.replace(/\./g, "/.");
+		});
 	let pathKey: string = categoryPathKay.join(".");
 
 	const categoryPath = element.type == t.VroElementType.ScriptModule
