@@ -89,14 +89,15 @@ const serializeTreeElement = async (context: any, element: t.VroNativeElement): 
 	const categoryPathKay = element.type == t.VroElementType.ScriptModule
 		? element.categoryPath
 		: element.categoryPath.map(c => {
-			if (typeof c !== "undefined") {
+			if (typeof c === "undefined") {
+                throw new Error(`Category path includes illegal characters.`);
+            } else {
 				['\\', ':', '*', '?', '"', '<', '>', '|', '&'].forEach(char => {
-					if (c.includes(char)) {
-						throw new Error(`Category path "${c}" includes illegal character "${char}".`);
-					}
-				});
-	
-				return c.replace(/\./g, "/.");
+                    if (c.includes(char)) {
+                        throw new Error(`Category path "${c}" includes illegal character "${char}".`);
+                    }
+                });
+        	    return c.replace(/\./g, "/.");
 			}
 		});
 	let pathKey: string = categoryPathKay.join(".");
