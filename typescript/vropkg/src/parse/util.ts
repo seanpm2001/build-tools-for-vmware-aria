@@ -25,13 +25,7 @@ export const read = (file) => decode(fs.readFileSync(file));
 export const xml = (data) => new xmldoc.XmlDocument(data);
 export const xmlGet = (doc, key): string => (doc.childWithAttribute("key", key) || {}).val;
 export const xmlChildNamed = (doc, name) : string  =>  doc.childNamed(name)?.val || "";
-export const xmlToCategory = (categories): string[] => categories.children.map((e: xmldoc.XmlElement) => {
-    if(!e.attr.name){
-        return e.firstChild.val ? e.firstChild.val : "undefined";
-    } else {
-       return e.attr.name
-    }
-});
+export const xmlToCategory = (categories): string[] => categories.children.map((e: xmldoc.XmlElement) => e.attr.name || e.firstChild.val || "undefined" );
 export const xmlToTag = (tags): string[] => tags.children.filter(e=>e.attr && e.attr.name).map((e: xmldoc.XmlElement) => e.attr.name);
 export const stringToCategory = (category): string[] => category.split(/(?<!\/)\./)
 	.map(path => { return path.replace(/\//g, "") })
