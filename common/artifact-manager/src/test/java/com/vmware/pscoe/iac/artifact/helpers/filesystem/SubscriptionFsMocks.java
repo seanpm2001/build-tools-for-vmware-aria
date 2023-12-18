@@ -19,20 +19,20 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vmware.pscoe.iac.artifact.model.vrang.VraNgSubscription;
 
+import static com.vmware.pscoe.iac.artifact.store.vrang.VraNgDirs.DIR_SUBSCRIPTIONS;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
-public class SubscriptionFsMocks extends VraNgFsMock {
-	private final static String WORKDIR = "subscription";
-
+public class SubscriptionFsMocks extends VraNgFsMock {	
 	public SubscriptionFsMocks(File tempDir) {
 		super(tempDir);
 	}
 
 	@Override
 	public File getWorkdir() {
-		return Paths.get(this.tempDir.getPath(), WORKDIR).toFile();
+		return Paths.get(this.tempDir.getPath(), DIR_SUBSCRIPTIONS).toFile();
 	}
 
 	/**
